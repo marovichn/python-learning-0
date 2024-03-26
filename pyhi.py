@@ -41,12 +41,12 @@ while True:
     if user_input:
         word = user_input.strip().lower()
         definition = get_word_definition(word)
-        if isinstance(definition, list):
+        if not isinstance(definition, list):
+            print(definition)
+        else:
             print(f"Definitions of '{word}':")
             for i, d in enumerate(definition, 1):
                 print(f"{i}. {d}")
-        else:
-            print(definition)
     else:
         random_word, definition = get_word_definition()
         print(f"Word: {random_word}\nDefinition: {definition}")
