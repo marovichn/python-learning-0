@@ -1,147 +1,22 @@
 import random
-import time
+import nltk
+from nltk.corpus import wordnet as wn
 
-# Dictionary of words and their definitions
-word_definitions = {
-    "serendipity": "The occurrence and development of events by chance in a happy or beneficial way.",
-    "ephemeral": "Lasting for a very short time.",
-    "luminous": "Full of or shedding light; bright or shining, especially in the dark.",
-    "ethereal": "Extremely delicate and light in a way that seems too perfect for this world.",
-    "melancholy": "A feeling of pensive sadness, typically with no obvious cause.",
-    "quixotic": "Exceedingly idealistic; unrealistic and impractical.",
-    "sonorous": "Imposingly deep and full.",
-    "resplendent": "Attractive and impressive through being richly colorful or sumptuous.",
-    "effervescent": "Vivacious and enthusiastic.",
-    "mellifluous": "Sweet or musical; pleasant to hear.",
-    "eloquent": "Fluent or persuasive in speaking or writing.",
-    "enigmatic": "Difficult to interpret or understand; mysterious.",
-    "serene": "Calm, peaceful, and untroubled; tranquil.",
-    "ambrosial": "Exceptionally pleasing to taste or smell; especially delicious or fragrant.",
-    "harbinger": "A person or thing that announces or signals the approach of another.",
-    "nostalgia": "A sentimental longing or wistful affection for the past.",
-    "surreptitious": "Kept secret, especially because it would not be approved of.",
-    "efflorescence": "The state or a period of flowering.",
-    "evanescent": "Soon passing out of sight, memory, or existence; quickly fading or disappearing.",
-    "penumbra": "The partially shaded outer region of the shadow cast by an opaque object.",
-    "labyrinthine": "Complicated and confusing, like a labyrinth.",
-    "oblivion": "The state of being unaware or unconscious of what is happening.",
-    "inexorable": "Impossible to stop or prevent.",
-    "epiphany": "A moment of sudden revelation or insight.",
-    "fleeting": "Lasting for a very short time.",
-    "mystic": "Involving or characterized by esoteric, otherworldly, or symbolic practices or content.",
-    "gossamer": "A fine, filmy substance consisting of cobwebs spun by small spiders.",
-    "bucolic": "Relating to the pleasant aspects of the countryside and country life.",
-    "verdant": "Green with grass or other rich vegetation.",
-    "idyllic": "Extremely happy, peaceful, or picturesque.",
-    "halcyon": "Denoting a period of time in the past that was idyllically happy and peaceful.",
-    "sonnet": "A poem of fourteen lines using any of a number of formal rhyme schemes, in English typically having ten syllables per line.",
-    "quatrain": "A stanza of four lines, especially one having alternate rhymes.",
-    "haiku": "A Japanese poem of seventeen syllables, in three lines of five, seven, and five.",
-    "elegy": "A poem of serious reflection, typically a lament for the dead.",
-    "epic": "A long poem, typically one derived from ancient oral tradition, narrating the deeds and adventures of heroic or legendary figures or the history of a nation.",
-    "ode": "A lyric poem in the form of an address to a particular subject, often elevated in style or manner and written in varied or irregular meter.",
-    "ballad": "A poem or song narrating a story in short stanzas.",
-    "metaphor": "A figure of speech in which a word or phrase is applied to an object or action to which it is not literally applicable.",
-    "simile": "A figure of speech involving the comparison of one thing with another thing of a different kind, used to make a description more emphatic or vivid.",
-    "alliteration": "The occurrence of the same letter or sound at the beginning of adjacent or closely connected words.",
-    "personification": "The attribution of a personal nature or human characteristics to something nonhuman, or the representation of an abstract quality in human form.",
-    "onomatopoeia": "The formation of a word from a sound associated with what is named.",
-    "hyperbole": "Exaggerated statements or claims not meant to be taken literally.",
-    "paradox": "A seemingly absurd or contradictory statement or proposition which when investigated may prove to be well founded or true.",
-    "irony": "The expression of one's meaning by using language that normally signifies the opposite, typically for humorous or emphatic effect.",
-    "metonymy": "The substitution of the name of an attribute or adjunct for that of the thing meant.",
-    "synecdoche": "A figure of speech in which a part is made to represent the whole or vice versa.",
-    "assonance": "The repetition of the sound of a vowel or diphthong in nonrhyming stressed syllables near enough to each other for the echo to be discernible.",
-    "consonance": "The recurrence of similar sounds, especially consonants, in close proximity.",
-    "cacophony": "A harsh, discordant mixture of sounds.",
-    "euphony": "The quality of being pleasing to the ear, especially through a harmonious combination of words.",
-    "rhapsody": "An effusively enthusiastic or ecstatic expression of feeling.",
-    "soliloquy": "An act of speaking one's thoughts aloud when by oneself or regardless of any hearers, especially by a character in a play.",
-    "pastiche": "An artistic work in a style that imitates that of another work, artist, or period.",
-    "panacea": "A solution or remedy for all difficulties or diseases.",
-    "quintessential": "Representing the most perfect or typical example of a quality or class.",
-    "ephemeral": "Lasting for a very short time.",
-    "talisman": "An object, typically an inscribed ring or stone, that is thought to have magic powers and to bring good luck.",
-    "chimerical": "Existing only as the product of unchecked imagination; fantastically improbable.",
-    "melancholy": "A feeling of pensive sadness, typically with no obvious cause.",
-    "gossamer": "A fine, filmy substance consisting of cobwebs spun by small spiders.",
-    "serein": "Fine rain falling after sunset from a sky in which no clouds are visible.",
-    "luminous": "Full of or shedding light; bright or shining, especially in the dark.",
-    "petrichor": "A pleasant smell that frequently accompanies the first rain after a long period of warm, dry weather.",
-    "mellifluous": "Sweet or musical; pleasant to hear.",
-    "epiphany": "A moment of sudden revelation or insight.",
-    "halcyon": "Denoting a period of time in the past that was idyllically happy and peaceful.",
-    "serene": "Calm, peaceful, and untroubled; tranquil.",
-    "verdant": "Green with grass or other rich vegetation.",
-    "serendipity": "The occurrence and development of events by chance in a happy or beneficial way.",
-    "ethereal": "Extremely delicate and light in a way that seems too perfect for this world.",
-    "sylvan": "Consisting of or associated with woods; wooded.",
-    "resplendent": "Attractive and impressive through being richly colorful or sumptuous.",
-    "solace": "Comfort or consolation in a time of distress or sadness.",
-    "quixotic": "Exceedingly idealistic; unrealistic and impractical.",
-    "enigmatic": "Difficult to interpret or understand; mysterious.",
-    "ephemeral": "Lasting for a very short time.",
-    "cynosure": "A person or thing that is the center of attention or admiration.",
-    "bucolic": "Relating to the pleasant aspects of the countryside and country life.",
-    "aubade": "A poem or piece of music appropriate to the dawn or early morning.",
-    "alacrity": "Brisk and cheerful readiness.",
-    "aplomb": "Self-confidence or assurance, especially when in a demanding situation.",
-    "comely": "Typically of a woman, pleasant to look at; attractive.",
-    "convivial": "Friendly, lively, and enjoyable; cheerful and sociable.",
-    "denouement": "The final part of a play, movie, or narrative in which the strands of the plot are drawn together and matters are explained or resolved.",
-    "desultory": "Lacking a plan, purpose, or enthusiasm.",
-    "ebullient": "Cheerful and full of energy.",
-    "effervescent": "Vivacious and enthusiastic.",
-    "equivocate": "Use ambiguous language so as to conceal the truth or avoid committing oneself.",
-    "garrulous": "Excessively talkative, especially on trivial matters.",
-    "ignominious": "Deserving or causing public disgrace or shame.",
-    "incandescent": "Emitting light as a result of being heated.",
-    "incognito": "Having one's true identity concealed.",
-    "indomitable": "Impossible to subdue or defeat.",
-    "insouciant": "Showing a casual lack of concern; indifferent.",
-    "intrepid": "Fearless; adventurous (often used for rhetorical or humorous effect).",
-    "inveterate": "Having a particular habit, activity, or interest that is long-established and unlikely to change.",
-    "languid": "(of a person, manner, or gesture) Displaying or having a disinclination for physical exertion or effort; slow and relaxed.",
-    "magnanimous": "Very generous or forgiving, especially toward a rival or someone less powerful than oneself.",
-    "munificent": "Larger or more generous than is usual or necessary.",
-    "nefarious": "Wicked or criminal (typically of an action or activity).",
-    "obsequious": "Obedient or attentive to an excessive or servile degree.",
-    "paragon": "A person or thing regarded as a perfect example of a particular quality.",
-    "perfidious": "Deceitful and untrustworthy.",
-    "pernicious": "Having a harmful effect, especially in a gradual or subtle way.",
-    "prosaic": "Having the style or diction of prose; lacking poetic beauty.",
-    "puerile": "Childishly silly and immature.",
-    "querulous": "Complaining in a petulant or whining manner.",
-    "quotidian": "Of or occurring every day; daily.",
-    "redolent": "Strongly reminiscent or suggestive of (something).",
-    "sagacious": "Having or showing keen mental discernment and good judgment; shrewd.",
-    "salacious": "Treating sexual matters in an indecent way and typically conveying undue interest in or enjoyment of the subject.",
-    "sanguine": "Optimistic or positive, especially in an apparently bad or difficult situation.",
-    "scintillating": "Sparkling or shining brightly.",
-    "seraphic": "Characteristic of or resembling a seraph or seraphim.",
-    "somnolent": "Sleepy; drowsy.",
-    "soporific": "Tending to induce drowsiness or sleep.",
-    "stentorian": "(of a person's voice) Loud and powerful.",
-    "sycophantic": "Behaving or done in an obsequious way in order to gain advantage.",
-    "taciturn": "Reserved or uncommunicative in speech; saying little.",
-    "tantamount": "Equivalent in seriousness to; virtually the same as.",
-    "temerity": "Excessive confidence or boldness; audacity.",
-    "tendentious": "Expressing or intending to promote a particular cause or point of view, especially a controversial one.",
-    "timorous": "Showing or suffering from nervousness, fear, or a lack of confidence.",
-    "ubiquitous": "Present, appearing, or found everywhere.",
-    "unctuous": "Excessively or ingratiatingly flattering; oily.",
-    "unfettered": "Free from restraint or inhibition.",
-    "venerable": "Accorded a great deal of respect, especially because of age, wisdom, or character.",
-    "verbose": "Using or expressed in more words than are needed.",
-    "vexatious": "Causing or tending to cause annoyance, frustration, or worry.",
-    "vituperative": "Bitter and abusive.",
-    "winsome": "Attractive or appealing in appearance or character.",
-    "wistful": "Having or showing a feeling of vague or regretful longing.",
-    "zealous": "Having or showing zeal.",
-    "zeitgeist": "The defining spirit or mood of a particular period of history as shown by the ideas and beliefs of the time.",
-    "zenith": "The time at which something is most powerful or successful.",
-    "zephyr": "A soft gentle breeze.",
-}
+nltk.download('wordnet')
+
+
+def generate_word_definitions():
+    word_definitions2 = {}
+    for synset in list(wn.all_synsets()):
+        word = synset.lemmas()[0].name()
+        if "_" not in word:  # Exclude multi-word expressions
+            definition = synset.definition()
+            word_definitions2[word] = definition
+    return word_definitions2
+
+
+# Generate word definitions
+word_definitions = generate_word_definitions()
 
 
 def print_random_word():
@@ -151,6 +26,7 @@ def print_random_word():
     # Print the random word and its definition
     print("Word:", random_word)
     print("Definition:", word_definitions[random_word])
+    print("\n")
 
 
 # Main program loop
